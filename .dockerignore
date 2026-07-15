@@ -1,0 +1,4 @@
+Phishing_Email.csv
+*.ipynb
+__pycache__/
+.git/

@@ -1,0 +1,21 @@
+{
+  "model_version": "v2.0",
+  "trained": "2026-07-10",
+  "sklearn_version": "1.9.0",
+  "n_training_emails": 17521,
+  "protocol": "dedupe -> stratified 80/20 split; artifact refit on all clean data",
+  "held_out_metrics": {
+    "acc": 0.9792,
+    "f1": 0.9717,
+    "roc_auc": 0.9973
+  },
+  "artifact_masked_metrics": {
+    "acc": 0.9769,
+    "f1": 0.9686,
+    "roc_auc": 0.9967
+  },
+  "labels": {
+    "0": "Safe Email",
+    "1": "Phishing Email"
+  }
+}
