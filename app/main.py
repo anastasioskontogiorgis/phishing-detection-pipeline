@@ -11,12 +11,14 @@
 #   GET  /stats    in-memory counters: request volume, class mix, latency —
 #                  first-line monitoring for the drift the notebook predicts
 #
-# Monitoring philosophy: the training data's ham has narrow provenance (see the
-# notebook's Skeptic's corner), so live traffic WILL differ from the benchmark.
-# Every request is therefore logged as a JSON line (timestamp, latency, verdict,
-# probability, text length — never the text itself), and /stats summarises the
-# running prediction distribution so drift is visible at a glance.
-# ---------------------------------------------------------------------------
+# The training data's legitimate class has narrow provenance. Section 5 of 
+# the notebook ablates it and Section 8 measures the consequence by introducing
+# mail written outside the corpus the model's predictions move toward the threshold
+# instead of the extremes, losing resolution while remaining roughly unbiased. 
+# Every request is logged as a JSON line (timestamp, latency, verdict,
+# probability, text length, never the text itself), and /stats summarises the
+# running prediction distribution so that drift is visible at a glance.
+# ------------------------------------------------------------------------
 
 import json
 import logging
@@ -30,7 +32,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
-# ----------------------------- model loading -------------------------------
+# ----------------------------- model loading --------------------------
 MODEL_DIR = Path(os.environ.get("MODEL_DIR", "model"))
 pipeline = joblib.load(MODEL_DIR / "phishing_pipeline.joblib")
 metadata = json.loads((MODEL_DIR / "metadata.json").read_text())
@@ -72,7 +74,7 @@ def predict(email: EmailIn) -> PredictionOut:
         _stats["n_phishing" if proba >= 0.5 else "n_safe"] += 1
         _stats["latency_ms_sum"] += latency
 
-    # structured request log: metrics only, never the email content
+    # structured request log contains metrics only
     log.info(json.dumps({"ts": time.time(), "event": "prediction",
                          "label": label, "proba": round(proba, 4),
                          "text_chars": len(email.text),
@@ -101,7 +103,7 @@ def stats():
                 "held_out_metrics": metadata.get("held_out_metrics")}
 
 
-# ----------------------------- minimal UI ----------------------------------
+# ----------------------------- minimal UI ---------------------------
 _UI = """<!doctype html><html><head><meta charset="utf-8">
 <title>Phishing Email Detector</title>
 <style>
@@ -117,8 +119,8 @@ _UI = """<!doctype html><html><head><meta charset="utf-8">
 </style></head><body>
 <h1>Phishing Email Detector</h1>
 <p>Paste an email below. The model returns a verdict and its phishing probability.
-<small>(demo of a leakage-audited TF-IDF + logistic-regression pipeline — see the
-project notebook for the honest evaluation behind it)</small></p>
+<small>(demo of a leakage-audited TF-IDF + logistic-regression pipeline. See the
+project notebook for the full analysis including evaluation of results)</small></p>
 <textarea id="t" placeholder="Paste email text here..."></textarea><br>
 <button onclick="go()">Check email</button>
 <div id="out"></div>
