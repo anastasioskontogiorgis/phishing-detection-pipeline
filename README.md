@@ -103,10 +103,9 @@ The legitimate class has narrow provenance, measured and ablated in Sections 5 a
 8, so live traffic will differ from the benchmark distribution. The service makes
 that difference visible. Every request is logged as a JSON line recording the
 verdict, the probability, the latency and the text length, never the text itself,
-and `/stats` tracks the running prediction distribution against the held-out
-baseline.
+and `/stats` reports request volume, the running class mix and latency.
 
-Section 8 identifies what to watch for. Traffic unlike the training corpus produces
+Section 8 identifies what to watch for in the logged probabilities. Traffic unlike the training corpus produces
 predictions clustered around the threshold rather than at the extremes, so a rising
 proportion of mid-range probabilities is the earliest available indication that the
 operating point requires revision.
