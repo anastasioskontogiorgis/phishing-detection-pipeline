@@ -16,8 +16,9 @@
 # mail written outside the corpus the model's predictions move toward the threshold
 # instead of the extremes, losing resolution while remaining roughly unbiased. 
 # Every request is logged as a JSON line (timestamp, latency, verdict,
-# probability, text length, never the text itself), and /stats summarises the
-# running prediction distribution so that drift is visible at a glance.
+# probability, text length, not the text itself), so the probability
+# distribution can be tracked from the logs; /stats summarises request volume,
+# class mix and latency.
 # ------------------------------------------------------------------------
 
 import json
